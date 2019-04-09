@@ -1,24 +1,33 @@
 # BetterGChat
 
+A quick extension to replace Twitch, [BTTV](https://nightdev.com/betterttv/), and [FrankerFaceZ](https://www.frankerfacez.com/) codes in a google hangouts popout chat window. This is the full extension, so it should be manageable with minimal coding experience.
 
-A quick extension to replace [BTTV](https://nightdev.com/betterttv/)/[FrankerFaceZ](https://www.frankerfacez.com/) codes in a google hangouts popout. Structure and self-hosting to come! Actual twitch emotes will be added soon as well.
+## Usage
+
+Rename the configTemplate file to `config.js` and change the export to `config` instead of `configTemplate`. Add your twitch client ID and any more channels you want the extension to pull from. It'll pull in their twitch emotes, as well as FFZ and BTTV emotes.
+
+Open a GChat window through mail.google.com, hit the popout button, and OMEGALUL to your heart's content.
 
 ## Emote Selection
-Currently pulling from the following channels:
+Currently pulling from the following default channels:
 
 ### Janet (https://www.twitch.tv/xchocobars)
+https://twitchemotes.com/channels/42583390
 https://api.betterttv.net/2/channels/xchocobars  
-https://api.betterttv.net/2/frankerfacez_emotes/channels/42583390
+https://www.frankerfacez.com/channel/xchocobars
 
 ### Poki (https://www.twitch.tv/pokimane)
+https://twitchemotes.com/channels/44445592
 https://api.betterttv.net/2/channels/pokimane  
-https://api.betterttv.net/2/frankerfacez_emotes/channels/44445592
+https://www.frankerfacez.com/channel/pokimane
 
 ### Toast (https://www.twitch.tv/disguisedtoast)
+https://twitchemotes.com/channels/87204022
 https://api.betterttv.net/2/channels/disguisedtoast  
-https://api.betterttv.net/2/frankerfacez_emotes/channels/87204022
+https://www.frankerfacez.com/channel/disguisedtoast
 
 ### Loserfruit (https://www.twitch.tv/loserfruit)
+https://twitchemotes.com/channels/41245072
 https://api.betterttv.net/2/channels/loserfruit
 
 

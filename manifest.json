@@ -1,7 +1,7 @@
 {
 	"name"       : "Better GChat",
 	"description": "BTTV Emotes in GChat",
-	"version"    : "0.5",
+	"version"    : "1.0",
 	"manifest_version": 2,
 
 	"content_scripts": [
@@ -10,8 +10,9 @@
 			"js"     : ["bgchat.js"]
 		}
 	],
-	"permissions": [
-    	"*://api.betterttv.net/*",
-    	"*://cdn.betterttv.net/*"
+	"web_accessible_resources": [
+		"src/*",
+		"config.js"
 	]
+  
 }
