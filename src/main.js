@@ -12,6 +12,7 @@ function generateEmoteList() {
 	let emotes = new Map();
 	// Get Base
 	fetchEmotesForURL(emotes, 'https://api.betterttv.net/2/emotes', BTTV);
+	getGlobalTwitchEmotes(emotes);
 
 	if( config.hasOwnProperty("channels") ) {
 		config.channels.forEach(function (name) {
@@ -24,6 +25,20 @@ function generateEmoteList() {
 	}
 
 	return emotes
+}
+
+function getGlobalTwitchEmotes(emotes) {
+	if( !config.hasOwnProperty("twitchClientId") ) {
+		return;
+	}
+	let url = "https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=0&client_id="+config.twitchClientId;
+	api.get(url, function(response) {
+		if(response.hasOwnProperty("emoticon_sets") ) {
+			response.emoticon_sets[0].forEach( function(e) {
+				emotes.set(e.code.toLowerCase(), 'https://static-cdn.jtvnw.net/emoticons/v1/'+e.id+'/1.0');
+			});
+		}
+	});
 }
 
 function fetchEmotesForURL(emotes, url, type ) {

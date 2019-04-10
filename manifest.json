@@ -1,7 +1,7 @@
 {
 	"name"       : "Better GChat",
 	"description": "BTTV Emotes in GChat",
-	"version"    : "1.1",
+	"version"    : "1.2",
 	"manifest_version": 2,
 
 	"content_scripts": [
