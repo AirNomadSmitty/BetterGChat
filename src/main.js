@@ -1,6 +1,5 @@
 "use strict";
 
-import config from "../config.js";
 import api from "./modules/api.js";
 
 
@@ -8,30 +7,28 @@ const BTTV = 'bttv';
 const FRANKERZ = 'frankerz';
 const TWITCH = 'twitch';
 
-function generateEmoteList() {
+function generateEmoteList(channels, twitchClientId) {
 	let emotes = new Map();
 	// Get Base
 	fetchEmotesForURL(emotes, 'https://api.betterttv.net/2/emotes', BTTV);
-	getGlobalTwitchEmotes(emotes);
+	getGlobalTwitchEmotes(emotes, twitchClientId);
 
-	if( config.hasOwnProperty("channels") ) {
-		config.channels.forEach(function (name) {
-			fetchEmotesForURL(emotes, 'https://api.betterttv.net/2/channels/'+name, BTTV);
-			fetchEmotesForURL(emotes, 'https://api.frankerfacez.com/v1/room/'+name, FRANKERZ);
-			if( config.hasOwnProperty('twitchClientId') ) {
-				fetchEmotesForURL(emotes, 'https://api.twitch.tv/api/channels/'+name+'/product?client_id='+config.twitchClientId, TWITCH);
-			}
-		})
-	}
+	channels.forEach(function (name) {
+		fetchEmotesForURL(emotes, 'https://api.betterttv.net/2/channels/'+name, BTTV);
+		fetchEmotesForURL(emotes, 'https://api.frankerfacez.com/v1/room/'+name, FRANKERZ);
+		if( twitchClientId ) {
+			fetchEmotesForURL(emotes, 'https://api.twitch.tv/api/channels/'+name+'/product?client_id='+twitchClientId, TWITCH);
+		}
+	});
 
 	return emotes
 }
 
-function getGlobalTwitchEmotes(emotes) {
-	if( !config.hasOwnProperty("twitchClientId") ) {
+function getGlobalTwitchEmotes(emotes, twitchClientId) {
+	if( !twitchClientId ) {
 		return;
 	}
-	let url = "https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=0&client_id="+config.twitchClientId;
+	let url = "https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=0&client_id="+twitchClientId;
 	api.get(url, function(response) {
 		if(response.hasOwnProperty("emoticon_sets") ) {
 			response.emoticon_sets[0].forEach( function(e) {
@@ -42,6 +39,9 @@ function getGlobalTwitchEmotes(emotes) {
 }
 
 function fetchEmotesForURL(emotes, url, type ) {
+	// chrome.storage.local.get(['apiCache'], function(data) {
+	// 	if(!(typeof data.apiCache === undefined) && data.apiCache.time)
+	// });
 	api.get( url, function(response) {
 		switch (type){
 			case BTTV:
@@ -114,13 +114,19 @@ function startObserver(emotes) {
 
 	let observer = new MutationObserver(callback);
 
+	// document.querySelectorAll("div .zhxlYb")
+	// document.querySelectorAll("div .fkp8p")
 	observer.observe(document, observerConf);
 } 
 
 
 export function main() {
 	// TODO: cache these with local storage?
-	// Probably cache by channel
-	let emotes = generateEmoteList();
-	startObserver(emotes);
+	// Probably cache by channel or url
+	chrome.storage.local.get(['twitchClientId', 'channels'], function(data) {
+		if(data.channels) {
+			let emotes = generateEmoteList(data.channels, data.twitchClientId);
+			startObserver(emotes);			
+		}
+	});
 }
