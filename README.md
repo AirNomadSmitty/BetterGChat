@@ -4,7 +4,7 @@ A quick extension to replace Twitch, [BTTV](https://nightdev.com/betterttv/), an
 
 ## Usage
 
-Rename the configTemplate file to `config.js` and change the export to `config` instead of `configTemplate`. Add your twitch client ID and any more channels you want the extension to pull from. It'll pull in their twitch emotes, as well as FFZ and BTTV emotes.
+Open up the extension options page and add your twitch client ID and any more channels you want the extension to pull from. It'll pull in their twitch emotes, as well as FFZ and BTTV emotes. Without a twitch client ID you can still get the FFZ and BTTV emotes.
 
 Open a GChat window through mail.google.com and OMEGALUL to your heart's content.
 
