@@ -39,44 +39,62 @@ function getGlobalTwitchEmotes(emotes, twitchClientId) {
 }
 
 function fetchEmotesForURL(emotes, url, type ) {
-	// chrome.storage.local.get(['apiCache'], function(data) {
-	// 	if(!(typeof data.apiCache === undefined) && data.apiCache.time)
-	// });
-	api.get( url, function(response) {
-		switch (type){
-			case BTTV:
-				if( !response.hasOwnProperty('emotes') ) {
-					console.log('No emotes found at: '+url);
-				} else {
-					response.emotes.forEach( function(e) {
-						emotes.set(e.code.toLowerCase(), "https://cdn.betterttv.net/emote/"+e.id+"/1x");
-					});	
-				}
-				break;
-			case FRANKERZ:
-				if( !response.hasOwnProperty('sets') || !response.hasOwnProperty('room') ) {
-					console.log('No emotes found at: '+url);
-				} else {
-					response.sets[response.room.set].emoticons.forEach( function(e) {
-						emotes.set(e.name.toLowerCase(), "https:"+e.urls[1]);
-					});	
-				}
-				break;
-			case TWITCH:
-				if( !response.hasOwnProperty('emoticons') ) {
-					console.log('No emotes found at: '+url);
-				} else {
-					response.emoticons.forEach( function(e) {
-						emotes.set(e.regex.toLowerCase(), e.url);
-					});	
-				}
-				break;
-			default:
-				console.error('Unknown emote request type');
+	chrome.storage.local.get(['apiCache'], function(data) {
+		if(!(typeof data.apiCache === 'undefined') ) {
+			// If cache exists, url is found, AND it's recent enough
+			if(data.apiCache.hasOwnProperty(url) && data.apiCache[url].time > Date.now() - 3600*1000) {
+				handleEmoteApiResponse(emotes, data.apiCache[url].data, type, url);
 				return;
+			}
+		// If cache isn't set, initialize it
+		} else {
+			data.apiCache = {};
 		}
+		api.get( url, function(response) {
+			handleEmoteApiResponse(emotes, response, type, url);
+			let cache = data.apiCache;
+			cache[url] = {
+				"data": response,
+				"time": Date.now()
+			};
+			chrome.storage.local.set({'apiCache': cache});
+		});
+	});
+}
 
-	})
+function handleEmoteApiResponse(emotes, response, type, url) {
+	switch (type){
+		case BTTV:
+			if( !response.hasOwnProperty('emotes') ) {
+				console.log('No emotes found at: '+url);
+			} else {
+				response.emotes.forEach( function(e) {
+					emotes.set(e.code.toLowerCase(), "https://cdn.betterttv.net/emote/"+e.id+"/1x");
+				});	
+			}
+			break;
+		case FRANKERZ:
+			if( !response.hasOwnProperty('sets') || !response.hasOwnProperty('room') ) {
+				console.log('No emotes found at: '+url);
+			} else {
+				response.sets[response.room.set].emoticons.forEach( function(e) {
+					emotes.set(e.name.toLowerCase(), "https:"+e.urls[1]);
+				});	
+			}
+			break;
+		case TWITCH:
+			if( !response.hasOwnProperty('emoticons') ) {
+				console.log('No emotes found at: '+url);
+			} else {
+				response.emoticons.forEach( function(e) {
+					emotes.set(e.regex.toLowerCase(), e.url);
+				});	
+			}
+			break;
+		default:
+			console.error('Unknown emote request type');
+			return;
+	}
 }
 
 function kappifyComment(commentNode, emotes) {
